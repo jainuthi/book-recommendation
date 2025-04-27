@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Recommendation UI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fa;
+      color: #333;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+    }
+    .section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #34495e;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #7f8c8d;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      margin-top: 20px;
+    }
+    ul {
+      list-style-type: none;
+    }
+    li {
+      padding: 10px;
+      background: #ecf0f1;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #3498db;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 2em; }
+      .section { padding: 15px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Book Recommendation Engine</h1>
+
+  <!-- Section 1: Books by Genre -->
+  <div class="section">
+    <h2>Find Books by Genre</h2>
+    <div class="input-group">
+      <label for="genre">Genre:</label>
+      <input type="text" id="genre" placeholder="e.g., Sci-Fi">
+    </div>
+    <button onclick="getBooksByGenre()">Search by Genre</button>
+    <div id="genre-results" class="result"></div>
+  </div>
+
+  <!-- Section 2: Books by Author -->
+  <div class="section">
+    <h2>Find Books by Author</h2>
+    <div class="input-group">
+      <label for="author">Author:</label>
+      <input type="text" id="author" placeholder="e.g., Isaac Asimov">
+    </div>
+    <button onclick="getBooksByAuthor()">Search by Author</button>
+    <div id="author-results" class="result"></div>
+  </div>
+
+  <!-- Section 3: Similar Books -->
+  <div class="section">
+    <h2>Find Similar Books</h2>
+    <div class="input-group">
+      <label for="book">Book Title:</label>
+      <input type="text" id="book" placeholder="e.g., Foundation">
+    </div>
+    <button onclick="getSimilarBooks()">Search Similar Books</button>
+    <div id="similar-results" class="result"></div>
+  </div>
+
+  <script>
+    // Fetch books by genre
+    async function getBooksByGenre() {
+      console.log('Getting books by genre...');
+      const genre = document.getElementById('genre').value.trim().replace(/\s+/g, '-');
+      const url = `http://localhost:3000/books/genre?genre=${genre}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const books = await response.json();
+        console.log('Books by genre:', books);
+        displayResults(books, 'genre-results', `Books in ${genre}`);
+      } catch (error) {
+        console.error('Error in getBooksByGenre:', error);
+        document.getElementById('genre-results').innerHTML = 'Error fetching books by genre. Check console for details.';
+      }
+    }
+
+    // Fetch books by author
+    async function getBooksByAuthor() {
+      console.log('Getting books by author...');
+      const author = document.getElementById('author').value.trim();
+      const url = `http://localhost:3000/books/author?author=${author}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const books = await response.json();
+        console.log('Books by author:', books);
+        displayResults(books, 'author-results', `Books by ${author}`);
+      } catch (error) {
+        console.error('Error in getBooksByAuthor:', error);
+        document.getElementById('author-results').innerHTML = 'Error fetching books by author. Check console for details.';
+      }
+    }
+
+    // Fetch similar books
+    async function getSimilarBooks() {
+      console.log('Getting similar books...');
+      const book = document.getElementById('book').value.trim();
+      const url = `http://localhost:3000/books/similar?title=${book}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const books = await response.json();
+        console.log('Similar books:', books);
+        displayResults(books, 'similar-results', `Books similar to ${book}`);
+      } catch (error) {
+        console.error('Error in getSimilarBooks:', error);
+        document.getElementById('similar-results').innerHTML = 'Error fetching similar books. Check console for details.';
+      }
+    }
+
+    // Display results in the specified section
+    function displayResults(books, elementId, header) {
+      const container = document.getElementById(elementId);
+      if (!books || books.length === 0) {
+        container.innerHTML = 'No books found.';
+        return;
+      }
+
+      container.innerHTML = `<h3>${header}</h3><ul>`;
+      books.forEach(book => {
+        container.innerHTML += `<li>${book.title} by ${book.author} (Genre: ${book.genres.join(', ')}, Rating: ${book.rating || 'N/A'})</li>`;
+      });
+      container.innerHTML += '</ul>';
+    }
+  </script>
+</body>
+</html>
