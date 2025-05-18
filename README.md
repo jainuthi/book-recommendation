@@ -7,5 +7,7 @@ A Recommendation System for books using MongoDB aggregations framework
 - MongoDB Aggregation Framework for querying and filtering
 ## Tech stack
 -Frontend: HTML, CSS, Vanilla JS
+
 -Backend: Node.js,Express.js
+
 -Database: MongoDB (compass)
