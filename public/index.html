@@ -1,194 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Recommendation UI</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f7fa;
-      color: #333;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 30px;
-      font-size: 2.5em;
-    }
-    .section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-    h2 {
-      color: #34495e;
-      margin-bottom: 15px;
-      font-size: 1.5em;
-    }
-    .input-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #7f8c8d;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1em;
-    }
-    button {
-      background-color: #3498db;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    .result {
-      margin-top: 20px;
-    }
-    ul {
-      list-style-type: none;
-    }
-    li {
-      padding: 10px;
-      background: #ecf0f1;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      border-left: 4px solid #3498db;
-    }
-    @media (max-width: 600px) {
-      h1 { font-size: 2em; }
-      .section { padding: 15px; }
-      button { width: 100%; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendations</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #f5f6fa;
+            --text-color: #2c3e50;
+        }
+
+        .dark-mode {
+            --primary-color: #ecf0f1;
+            --background-color: #2c3e50;
+            --text-color: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input, button, select {
+            padding: 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .range-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .book-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .book-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .genre-tag {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        .book-price {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin: 10px 0;
+        }
+
+        .book-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #f1c40f;
+        }
+
+        .star {
+            font-size: 1.2em;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-  <h1>Book Recommendation Engine</h1>
-
-  <!-- Section 1: Books by Genre -->
-  <div class="section">
-    <h2>Find Books by Genre</h2>
-    <div class="input-group">
-      <label for="genre">Genre:</label>
-      <input type="text" id="genre" placeholder="e.g., Sci-Fi">
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+        <div class="filters">
+            <h1>📚 Book Finder</h1>
+            <div class="filter-group">
+                <input type="text" id="genreInput" placeholder="Genre">
+                <input type="text" id="authorInput" placeholder="Author">
+                <input type="text" id="titleInput" placeholder="Book Title">
+            </div>
+            <div class="filter-group">
+                <div class="range-filter">
+                    <span>Price: </span>
+                    <input type="number" id="minPrice" placeholder="Min" step="5">
+                    <span>-</span>
+                    <input type="number" id="maxPrice" placeholder="Max" step="5">
+                </div>
+                <div class="range-filter">
+                    <span>Rating: ≥</span>
+                    <div class="slider-container">
+                        <input type="range" id="ratingFilter" min="0" max="5" step="0.5" value="0">
+                    </div>
+                    <span id="ratingValue">0</span>
+                </div>
+                <button onclick="searchBooks()">🔍 Search Books</button>
+            </div>
+        </div>
+        <div id="results" class="books-grid"></div>
+        <div class="loading">⏳ Loading...</div>
     </div>
-    <button onclick="getBooksByGenre()">Search by Genre</button>
-    <div id="genre-results" class="result"></div>
-  </div>
 
-  <!-- Section 2: Books by Author -->
-  <div class="section">
-    <h2>Find Books by Author</h2>
-    <div class="input-group">
-      <label for="author">Author:</label>
-      <input type="text" id="author" placeholder="e.g., Isaac Asimov">
-    </div>
-    <button onclick="getBooksByAuthor()">Search by Author</button>
-    <div id="author-results" class="result"></div>
-  </div>
+    <script>
+        // Fetch books from backend
+        async function fetchBooks(url) {
+            try {
+                const response = await fetch(`http://localhost:3000${url}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                alert('Failed to fetch books. Please try again later.');
+                return [];
+            }
+        }
 
-  <!-- Section 3: Similar Books -->
-  <div class="section">
-    <h2>Find Similar Books</h2>
-    <div class="input-group">
-      <label for="book">Book Title:</label>
-      <input type="text" id="book" placeholder="e.g., Foundation">
-    </div>
-    <button onclick="getSimilarBooks()">Search Similar Books</button>
-    <div id="similar-results" class="result"></div>
-  </div>
+        // Create book card HTML
+        function createBookCard(book) {
+            return `
+                <div class="book-card">
+                    ${book.image ? `<img src="${book.image}" alt="${book.title}" class="book-image">` : ''}
+                    <h3>${book.title}</h3>
+                    <p>📖 by ${book.author}</p>
+                    <div class="book-genres">
+                        ${book.genre.map(genre => `
+                            <span class="genre-tag">${genre}</span>
+                        `).join('')}
+                    </div>
+                    <div class="book-price">$${book.price?.toFixed(2) || 'N/A'}</div>
+                    <div class="book-rating">
+                        <span class="star">${'★'.repeat(Math.floor(book.rating))}</span>
+                        ${book.rating % 1 !== 0 ? '<span class="star">½</span>' : ''}
+                        <span>(${book.rating.toFixed(1)})</span>
+                    </div>
+                </div>
+            `;
+        }
 
-  <script>
-    // Fetch books by genre
-    async function getBooksByGenre() {
-      console.log('Getting books by genre...');
-      const genre = document.getElementById('genre').value.trim().replace(/\s+/g, '-');
-      const url = `http://localhost:3000/books/genre?genre=${genre}`;
+        // Global books array
+        let currentBooks = [];
+        const loading = document.querySelector('.loading');
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const books = await response.json();
-        console.log('Books by genre:', books);
-        displayResults(books, 'genre-results', `Books in ${genre}`);
-      } catch (error) {
-        console.error('Error in getBooksByGenre:', error);
-        document.getElementById('genre-results').innerHTML = 'Error fetching books by genre. Check console for details.';
-      }
-    }
+        async function searchBooks() {
+            showLoading();
+            
+            const genre = document.getElementById('genreInput').value;
+            const author = document.getElementById('authorInput').value;
+            const title = document.getElementById('titleInput').value;
+            
+            let books = [];
+            
+            try {
+                if (genre) {
+                    books = await fetchBooks(`/books/genre?genre=${encodeURIComponent(genre)}`);
+                } else if (author) {
+                    books = await fetchBooks(`/books/author?author=${encodeURIComponent(author)}`);
+                } else if (title) {
+                    books = await fetchBooks(`/books/similar?title=${encodeURIComponent(title)}`);
+                } else {
+                    books = await fetchBooks('/books');
+                }
+                
+                currentBooks = books;
+                applyFilters();
+            } catch (error) {
+                console.error('Search error:', error);
+            } finally {
+                hideLoading();
+            }
+        }
 
-    // Fetch books by author
-    async function getBooksByAuthor() {
-      console.log('Getting books by author...');
-      const author = document.getElementById('author').value.trim();
-      const url = `http://localhost:3000/books/author?author=${author}`;
+        function applyFilters() {
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+            const minRating = parseFloat(document.getElementById('ratingFilter').value);
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const books = await response.json();
-        console.log('Books by author:', books);
-        displayResults(books, 'author-results', `Books by ${author}`);
-      } catch (error) {
-        console.error('Error in getBooksByAuthor:', error);
-        document.getElementById('author-results').innerHTML = 'Error fetching books by author. Check console for details.';
-      }
-    }
+            const filtered = currentBooks.filter(book => 
+                book.price >= minPrice &&
+                book.price <= maxPrice &&
+                book.rating >= minRating
+            );
 
-    // Fetch similar books
-    async function getSimilarBooks() {
-      console.log('Getting similar books...');
-      const book = document.getElementById('book').value.trim();
-      const url = `http://localhost:3000/books/similar?title=${book}`;
+            displayResults(filtered);
+        }
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const books = await response.json();
-        console.log('Similar books:', books);
-        displayResults(books, 'similar-results', `Books similar to ${book}`);
-      } catch (error) {
-        console.error('Error in getSimilarBooks:', error);
-        document.getElementById('similar-results').innerHTML = 'Error fetching similar books. Check console for details.';
-      }
-    }
+        function displayResults(books) {
+            const results = document.getElementById('results');
+            if (books.length === 0) {
+                results.innerHTML = '<p>No books found.</p>';
+            } else {
+                results.innerHTML = books.map(book => createBookCard(book)).join('');
+            }
+        }
 
-    // Display results in the specified section
-    function displayResults(books, elementId, header) {
-      const container = document.getElementById(elementId);
-      if (!books || books.length === 0) {
-        container.innerHTML = 'No books found.';
-        return;
-      }
+        document.getElementById('ratingFilter').addEventListener('input', (e) => {
+            document.getElementById('ratingValue').textContent = e.target.value;
+            if (currentBooks.length) applyFilters();
+        });
 
-      container.innerHTML = `<h3>${header}</h3><ul>`;
-      books.forEach(book => {
-        container.innerHTML += `<li>${book.title} by ${book.author} (Genre: ${book.genres.join(', ')}, Rating: ${book.rating || 'N/A'})</li>`;
-      });
-      container.innerHTML += '</ul>';
-    }
-  </script>
+        document.querySelectorAll('#minPrice, #maxPrice').forEach(input => {
+            input.addEventListener('change', () => {
+                if (currentBooks.length) applyFilters();
+            });
+        });
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function showLoading() {
+            loading.style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        document.getElementById('ratingFilter').dispatchEvent(new Event('input'));
+    </script>
 </body>
 </html>
