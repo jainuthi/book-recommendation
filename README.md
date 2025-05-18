@@ -1,5 +1,5 @@
 # Book recommendation Engine
-    A Recommendation System for books using MongoDB aggregations framework that filters books based on features like genres, author, price, rating etc.
+A Recommendation System for books using MongoDB aggregations framework that filters books based on features like genres, author, price, rating etc.
 ---
 ## Features
 - Recommend books to users based on book title, genre, rating, price, author name etc.
